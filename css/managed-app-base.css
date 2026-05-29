@@ -28,6 +28,10 @@
   --managed-accent-strong: #115e59;
   --managed-accent-soft: #dff7f2;
   --managed-accent-tint: rgba(15, 118, 110, 0.12);
+  --managed-secondary-accent: #be3455;
+  --managed-secondary-accent-strong: #9f1239;
+  --managed-secondary-accent-soft: #ffe4e9;
+  --managed-secondary-accent-tint: rgba(190, 52, 85, 0.12);
   --managed-blue: #2563eb;
   --managed-blue-soft: #eaf1ff;
   --managed-amber: #b45309;
@@ -77,6 +81,10 @@
     --managed-accent-strong: #5eead4;
     --managed-accent-soft: rgba(45, 212, 191, 0.16);
     --managed-accent-tint: rgba(45, 212, 191, 0.18);
+    --managed-secondary-accent: #fb7185;
+    --managed-secondary-accent-strong: #fda4af;
+    --managed-secondary-accent-soft: rgba(251, 113, 133, 0.16);
+    --managed-secondary-accent-tint: rgba(251, 113, 133, 0.18);
     --managed-blue: #93c5fd;
     --managed-blue-soft: rgba(37, 99, 235, 0.2);
     --managed-amber: #fbbf24;
