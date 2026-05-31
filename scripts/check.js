@@ -4,6 +4,7 @@ const path = require("node:path");
 const root = path.resolve(__dirname, "..");
 const requiredFiles = [
   "css/managed-app-base.css",
+  "assets/politico-logo.svg",
   "scripts/managed-worker-client.js",
   "scripts/playwright-loader.js",
   "scripts/setup-shared-playwright.js",
