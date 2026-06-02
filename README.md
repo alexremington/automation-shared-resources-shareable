@@ -6,7 +6,7 @@ Apps should not depend on this folder at runtime. Instead, run each app's `npm r
 
 ## Contents
 
-- `css/managed-app-base.css`: common design tokens, reset rules, focus rings, and base form behavior.
+- `css/managed-app-base.css`: common design tokens, reset rules, focus rings, base form behavior, and managed header brand typography.
 - `assets/politico-logo.svg`: shared POLITICO header logo for managed apps.
 - `scripts/managed-worker-client.js`: shared Web Worker job runner for CPU-heavy browser work. It handles one active job at a time, cancels superseded jobs, forwards progress events, terminates workers cleanly, and falls back to an app-provided main-thread implementation when worker startup fails.
 - `scripts/playwright-loader.js`: shared Playwright module resolver for local and CI smoke tests.
