@@ -10,6 +10,7 @@ Apps should not depend on this folder at runtime. Instead, run each app's `npm r
 - `assets/politico-logo.svg`: shared POLITICO header logo for managed apps.
 - `scripts/managed-worker-client.js`: shared Web Worker job runner for CPU-heavy browser work. It handles one active job at a time, cancels superseded jobs, forwards progress events, terminates workers cleanly, and falls back to an app-provided main-thread implementation when worker startup fails.
 - `scripts/managed-app-pipeline.js`: shared verification pipeline for managed apps. It discovers apps, syncs shared resources, runs check/smoke/release tiers, and writes evidence artifacts.
+- `scripts/check-hume-design.js`: shared Hume design gate for app-level design review artifacts, visible focus styling, and no-scroll-lock requirements.
 - `scripts/playwright-loader.js`: shared Playwright module resolver for local and CI smoke tests.
 - `scripts/smoke-test-harness.js`: shared Playwright smoke-test helpers for loading Chromium, asserting visible interactive controls are reachable, and enforcing lightweight performance budgets.
 - `scripts/setup-shared-playwright.js`: shared Playwright installer for managed apps.
@@ -50,3 +51,5 @@ The shared Playwright package install lives next to the managed apps in:
 ```
 
 For full pipeline usage, see `docs/MANAGED-APP-PIPELINE.md`.
+
+For Hume's design persona and feature-review rules, see `docs/DESIGNER-AGENT.md`.

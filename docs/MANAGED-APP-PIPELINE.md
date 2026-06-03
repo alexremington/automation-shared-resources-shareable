@@ -8,6 +8,8 @@ The managed app pipeline is the shared verification harness for Automation Proje
 - `smoke`: run `fast`, then `npm run smoke:ui:local`.
 - `release`: run `smoke`, plus `npm run check:windows` and `npm run check:shareable`.
 
+Each tier starts with the shared-resource `check`, which includes Hume's design gate. That gate verifies the shared designer brief, the current design proposal artifact, each app's `docs/HUME-DESIGN-REVIEW.md`, visible focus styling, and the no-body-scroll-lock rule.
+
 ## Commands
 
 From `automation-shared-resources`, run every managed app:
@@ -66,3 +68,5 @@ A future managed app should provide:
 - `smoke:ui:local`
 
 The app should keep workflow-specific fixtures under `tests/fixtures/` and import shared smoke-test mechanics from `vendor/managed-app/scripts/smoke-test-harness.js`.
+
+Each app should also include `docs/HUME-DESIGN-REVIEW.md`. Visible feature work should update that review before implementation and use the managed release pipeline to confirm the built feature still aligns with Hume's minimalist, high-contrast, accessibility-first direction.

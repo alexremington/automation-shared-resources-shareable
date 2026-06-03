@@ -5,8 +5,10 @@ const root = path.resolve(__dirname, "..");
 const requiredFiles = [
   "css/managed-app-base.css",
   "assets/politico-logo.svg",
+  "docs/DESIGNER-AGENT.md",
   "scripts/managed-worker-client.js",
   "scripts/managed-app-pipeline.js",
+  "scripts/check-hume-design.js",
   "scripts/platform.js",
   "scripts/playwright-loader.js",
   "scripts/smoke-test-harness.js",

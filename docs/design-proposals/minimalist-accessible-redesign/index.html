@@ -1,0 +1,853 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Minimalist Accessible Redesign Proposals</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #071426;
+      --muted: #53657d;
+      --line: #c6d3e4;
+      --line-strong: #8299b5;
+      --canvas: #eef6ff;
+      --surface: #ffffff;
+      --surface-soft: #f8fbff;
+      --primary: #0057ff;
+      --primary-dark: #0038a8;
+      --teal: #008a7a;
+      --green: #0a7f3f;
+      --amber: #b86100;
+      --amber-soft: #fff3df;
+      --red: #c1121f;
+      --red-soft: #fff0f1;
+      --focus: #ffbf00;
+      --radius: 12px;
+      --shadow: 0 1px 2px rgb(7 20 38 / 0.08), 0 12px 28px rgb(7 20 38 / 0.08);
+      font-family: Inter, "Avenir Next", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 15px;
+      letter-spacing: 0;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: var(--canvas);
+      color: var(--ink);
+    }
+
+    .gallery {
+      display: grid;
+      gap: 40px;
+      padding: 32px;
+    }
+
+    .app-shot {
+      width: 1440px;
+      min-height: 980px;
+      overflow: hidden;
+      background: var(--canvas);
+      border: 1px solid var(--line);
+      border-radius: 0;
+    }
+
+    .topbar {
+      display: grid;
+      grid-template-columns: minmax(310px, 1fr) auto minmax(310px, 1fr);
+      align-items: center;
+      gap: 24px;
+      min-height: 88px;
+      padding: 18px 28px;
+      background: var(--surface);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      min-width: 0;
+    }
+
+    .mark {
+      display: grid;
+      place-items: center;
+      width: 48px;
+      height: 48px;
+      border: 2px solid var(--ink);
+      color: var(--ink);
+      font-weight: 900;
+      border-radius: 10px;
+      background: #fff;
+    }
+
+    h1,
+    h2,
+    h3,
+    p {
+      margin: 0;
+    }
+
+    h1 {
+      font-size: 28px;
+      line-height: 1.08;
+      font-weight: 800;
+    }
+
+    .subtitle {
+      margin-top: 3px;
+      color: var(--muted);
+      font-size: 14px;
+      font-weight: 650;
+    }
+
+    .top-status {
+      justify-self: center;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      color: var(--muted);
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .status-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--green);
+      box-shadow: 0 0 0 4px rgb(10 127 63 / 0.14);
+    }
+
+    .actions {
+      justify-self: end;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    button,
+    .button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 42px;
+      padding: 0 16px;
+      border: 1.5px solid var(--line-strong);
+      border-radius: 999px;
+      background: #fff;
+      color: var(--ink);
+      font: inherit;
+      font-weight: 800;
+      text-decoration: none;
+    }
+
+    .button.primary,
+    button.primary {
+      background: var(--primary);
+      border-color: var(--primary);
+      color: #fff;
+    }
+
+    .button.dark,
+    button.dark {
+      background: var(--ink);
+      border-color: var(--ink);
+      color: #fff;
+    }
+
+    .button.icon {
+      width: 42px;
+      padding: 0;
+      font-size: 20px;
+    }
+
+    .content {
+      padding: 24px 28px 32px;
+    }
+
+    .panel {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+
+    .panel-flat {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+    }
+
+    .section-title {
+      font-size: 18px;
+      font-weight: 850;
+    }
+
+    .meta {
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 650;
+    }
+
+    .duplicate-layout {
+      display: grid;
+      grid-template-columns: 390px minmax(0, 1fr);
+      gap: 18px;
+    }
+
+    .left-stack,
+    .right-stack,
+    .scheduler-stack {
+      display: grid;
+      gap: 18px;
+    }
+
+    .control-panel {
+      padding: 18px;
+    }
+
+    .control-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 14px;
+    }
+
+    .score-row {
+      display: grid;
+      grid-template-columns: 72px 1fr 72px;
+      align-items: end;
+      gap: 14px;
+    }
+
+    .score-box {
+      display: grid;
+      gap: 5px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 850;
+      text-transform: uppercase;
+    }
+
+    .score-value {
+      display: grid;
+      place-items: center;
+      height: 44px;
+      color: var(--ink);
+      border: 1.5px solid var(--line-strong);
+      border-radius: 10px;
+      font-size: 18px;
+      font-weight: 850;
+      background: var(--surface-soft);
+    }
+
+    .range {
+      position: relative;
+      height: 44px;
+      display: flex;
+      align-items: center;
+    }
+
+    .range::before {
+      content: "";
+      width: 100%;
+      height: 6px;
+      border-radius: 999px;
+      background: linear-gradient(90deg, #9fb3cc 0 56%, var(--amber) 56% 100%);
+    }
+
+    .thumb {
+      position: absolute;
+      top: 50%;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: var(--teal);
+      border: 3px solid #fff;
+      transform: translate(-50%, -50%);
+      box-shadow: 0 0 0 2px rgb(0 138 122 / 0.28);
+    }
+
+    .thumb.left {
+      left: 56%;
+    }
+
+    .thumb.right {
+      left: 98%;
+    }
+
+    .filters {
+      display: grid;
+      gap: 10px;
+      margin-top: 18px;
+    }
+
+    .field-row {
+      display: grid;
+      grid-template-columns: 1fr 140px 1fr auto;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .input {
+      min-height: 42px;
+      border: 1.5px solid var(--line-strong);
+      border-radius: 10px;
+      padding: 0 12px;
+      color: var(--ink);
+      background: #fff;
+      font-weight: 650;
+    }
+
+    .check-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 14px;
+      color: var(--ink);
+      font-weight: 700;
+    }
+
+    .box {
+      width: 20px;
+      height: 20px;
+      border: 1.5px solid var(--line-strong);
+      border-radius: 4px;
+      background: #fff;
+    }
+
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1px;
+      overflow: hidden;
+      background: var(--line);
+      border-radius: var(--radius);
+      border: 1px solid var(--line);
+    }
+
+    .summary-tile {
+      min-height: 74px;
+      padding: 14px 16px;
+      background: var(--surface);
+    }
+
+    .summary-tile strong {
+      display: block;
+      margin-top: 4px;
+      font-size: 24px;
+    }
+
+    .group-card {
+      padding: 18px;
+      border-left: 6px solid var(--teal);
+      display: grid;
+      gap: 14px;
+    }
+
+    .split-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .segmented {
+      display: inline-grid;
+      grid-auto-flow: column;
+      gap: 4px;
+      padding: 4px;
+      background: #e6effa;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+    }
+
+    .segmented span {
+      display: grid;
+      place-items: center;
+      min-height: 34px;
+      padding: 0 16px;
+      border-radius: 999px;
+      font-weight: 850;
+    }
+
+    .segmented .active {
+      background: var(--ink);
+      color: #fff;
+    }
+
+    .review-panel {
+      overflow: hidden;
+    }
+
+    .review-head {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 16px;
+      align-items: center;
+      padding: 18px 20px;
+      background: var(--surface);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .badges {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      min-height: 28px;
+      padding: 0 10px;
+      border-radius: 999px;
+      color: var(--ink);
+      border: 1px solid var(--line);
+      background: var(--surface-soft);
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .badge.green {
+      color: var(--green);
+      background: #e9fff1;
+      border-color: #98d9b1;
+    }
+
+    .badge.amber {
+      color: var(--amber);
+      background: var(--amber-soft);
+      border-color: #f0be78;
+    }
+
+    .merge-band {
+      padding: 18px 20px;
+      background: #fffaf2;
+      border-bottom: 1px solid #f0cf9f;
+    }
+
+    .merge-stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-top: 14px;
+    }
+
+    .stat-card {
+      min-height: 76px;
+      padding: 12px;
+      background: #f4f9ff;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+    }
+
+    .compare-table {
+      display: grid;
+      grid-template-columns: 210px 1fr 1fr;
+      border-top: 1px solid var(--line);
+    }
+
+    .compare-table div {
+      min-height: 58px;
+      padding: 13px 14px;
+      border-right: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+      background: #fff;
+    }
+
+    .compare-table .label {
+      background: #fff8ed;
+      font-size: 13px;
+      font-weight: 850;
+      text-transform: uppercase;
+    }
+
+    .compare-table .selected {
+      background: #dcfff4;
+      font-weight: 850;
+    }
+
+    .blocker {
+      margin: 18px 20px;
+      padding: 14px;
+      border: 2px solid var(--amber);
+      border-radius: 10px;
+      background: var(--amber-soft);
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 16px;
+      align-items: center;
+    }
+
+    .scheduler-layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 430px;
+      gap: 20px;
+    }
+
+    .toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 18px 20px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .job-table {
+      display: grid;
+    }
+
+    .job-row {
+      display: grid;
+      grid-template-columns: 1.4fr 0.9fr 1fr auto;
+      gap: 14px;
+      align-items: center;
+      min-height: 80px;
+      padding: 14px 20px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .job-row.header {
+      min-height: 46px;
+      color: var(--muted);
+      background: var(--surface-soft);
+      font-size: 13px;
+      font-weight: 850;
+      text-transform: uppercase;
+    }
+
+    .wizard {
+      padding: 20px;
+    }
+
+    .steps {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 6px;
+      margin: 16px 0 20px;
+    }
+
+    .step {
+      height: 6px;
+      border-radius: 999px;
+      background: #d9e4f2;
+    }
+
+    .step.done,
+    .step.active {
+      background: var(--primary);
+    }
+
+    .form {
+      display: grid;
+      gap: 14px;
+    }
+
+    .field {
+      display: grid;
+      gap: 6px;
+    }
+
+    .field label {
+      font-size: 13px;
+      font-weight: 850;
+      color: var(--ink);
+    }
+
+    .helper {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.35;
+    }
+
+    .inline-fields {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .schedule-chip-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .schedule-chip {
+      min-height: 34px;
+      padding: 7px 10px;
+      border: 1px solid var(--line-strong);
+      border-radius: 999px;
+      background: #fff;
+      font-weight: 800;
+    }
+
+    .warning {
+      padding: 12px;
+      border: 1.5px solid var(--amber);
+      border-radius: 10px;
+      background: var(--amber-soft);
+      color: var(--ink);
+    }
+  </style>
+</head>
+<body>
+  <main class="gallery">
+    <section class="app-shot" id="duplicate-reviewer-redesign" aria-label="Duplicate Reviewer proposed redesign">
+      <header class="topbar">
+        <div class="brand">
+          <div class="mark">P</div>
+          <div>
+            <h1>Duplicate Reviewer</h1>
+            <p class="subtitle">Salesforce Account and Contact Matching</p>
+          </div>
+        </div>
+        <div class="top-status"><span class="status-dot"></span>Latest Contacts loaded · 2 records · 1 group</div>
+        <nav class="actions" aria-label="Duplicate Reviewer actions">
+          <button class="primary">Import</button>
+          <button>Export</button>
+          <button>Send to Codex</button>
+          <button>Demo Data</button>
+          <button class="icon" aria-label="Help">?</button>
+        </nav>
+      </header>
+
+      <div class="content duplicate-layout">
+        <aside class="left-stack">
+          <section class="panel control-panel">
+            <div class="control-header">
+              <h2 class="section-title">Match Controls</h2>
+              <span class="badge green">86-100</span>
+            </div>
+            <div class="score-row">
+              <div class="score-box"><span>Min</span><span class="score-value">86</span></div>
+              <div class="range"><span class="thumb left"></span><span class="thumb right"></span></div>
+              <div class="score-box"><span>Max</span><span class="score-value">100</span></div>
+            </div>
+            <div class="filters">
+              <h3 class="section-title">Filters</h3>
+              <div class="field-row">
+                <div class="input">Full Name</div>
+                <div class="input">contains</div>
+                <div class="input" style="color: var(--muted);">Value</div>
+                <button class="primary">Apply</button>
+              </div>
+            </div>
+            <div class="check-row"><span class="box"></span><span>Fastest search</span><span class="meta">(may miss some results)</span></div>
+          </section>
+
+          <section class="summary-grid" aria-label="Dataset summary">
+            <div class="summary-tile"><span class="meta">Total Records</span><strong>2</strong></div>
+            <div class="summary-tile"><span class="meta">Match Groups</span><strong>1</strong></div>
+            <div class="summary-tile"><span class="meta">Reviewed</span><strong>0%</strong></div>
+          </section>
+
+          <section class="panel-flat control-panel">
+            <div class="control-header">
+              <h2 class="section-title">Match Groups</h2>
+              <button class="icon" aria-label="Sort">↓</button>
+            </div>
+            <div class="field">
+              <label>Label status</label>
+              <div class="check-row"><span class="box"></span><span style="font-weight: 500;">Unlabeled</span></div>
+              <div class="check-row"><span class="box"></span><span style="font-weight: 500;">Partially labeled</span></div>
+              <div class="check-row"><span class="box"></span><span style="font-weight: 500;">Fully labeled</span></div>
+            </div>
+            <div style="display: flex; justify-content: flex-end; margin-top: 12px;"><button>Apply</button></div>
+          </section>
+
+          <section class="panel-flat group-card">
+            <div class="split-row">
+              <div>
+                <h3>Alexander Test</h3>
+                <p class="meta">Alex Test</p>
+              </div>
+              <span class="badge green">95</span>
+            </div>
+          </section>
+        </aside>
+
+        <section class="right-stack">
+          <section class="panel-flat group-card">
+            <div class="split-row">
+              <div>
+                <span class="badge green">Contacts</span>
+                <h2 class="section-title" style="margin-top: 8px;">Contact group 1</h2>
+                <p class="meta">Duplicate decision not set</p>
+              </div>
+              <div class="actions">
+                <button>Duplicate</button>
+                <button>Not Duplicate</button>
+              </div>
+            </div>
+            <div class="segmented"><span>Evaluate</span><span class="active">Merge</span></div>
+          </section>
+
+          <section class="panel review-panel">
+            <div class="review-head">
+              <div>
+                <h2>95 match score</h2>
+                <p class="meta">100% fields matched · min pair 95</p>
+                <div class="badges">
+                  <span class="badge">Exact phone</span>
+                  <span class="badge">Same email domain</span>
+                  <span class="badge">Near-exact full name</span>
+                </div>
+              </div>
+              <span class="badge amber">Needs setup</span>
+            </div>
+            <div class="merge-band">
+              <span class="meta">Contact merge</span>
+              <div class="split-row">
+                <h2>2 Contacts: 1 master, 0 duplicates</h2>
+                <span class="badge amber">Mark duplicate first</span>
+              </div>
+              <div class="merge-stats">
+                <div class="stat-card"><span class="meta">Master baseline</span><h3>Alexander Test</h3><p class="meta">Missing Contact ID</p></div>
+                <div class="stat-card"><span class="meta">Field overrides</span><h3>0</h3><p class="meta">fields differ from the master</p></div>
+                <div class="stat-card"><span class="meta">Duplicates</span><h3>0</h3><p class="meta">will merge into the master</p></div>
+              </div>
+            </div>
+            <div class="compare-table" aria-label="Merge comparison">
+              <div class="label">Field</div><div class="label">Alexander Test</div><div class="label">Alex Test</div>
+              <div class="label">Name</div><div>Alexander Test<br><span class="meta">missing Contact ID</span></div><div class="selected">Alex Test<br><span class="meta">missing Contact ID</span></div>
+              <div class="label">Email</div><div>aremington+test2@gmail.com</div><div class="selected">aremington+test1@gmail.com</div>
+              <div class="label">Mobile</div><div class="selected">6786655734</div><div>6786655734</div>
+              <div class="label">Lead Source</div><div>Web</div><div>Referral</div>
+            </div>
+            <div class="blocker">
+              <div>
+                <h3>Contact IDs required</h3>
+                <p class="meta">2 active Contacts are missing valid Salesforce Contact IDs. Load the standard Latest Contacts pull with Id included before merging.</p>
+              </div>
+              <button class="primary">Load Latest Contacts</button>
+            </div>
+          </section>
+        </section>
+      </div>
+    </section>
+
+    <section class="app-shot" id="scheduler-redesign" aria-label="Salesforce Scheduler proposed redesign">
+      <header class="topbar">
+        <div class="brand">
+          <div class="mark">P</div>
+          <div>
+            <h1>Salesforce Scheduler</h1>
+            <p class="subtitle">Local Salesforce data pulls</p>
+          </div>
+        </div>
+        <div class="top-status"><span class="status-dot"></span>Jobs: 4/4 loaded</div>
+        <nav class="actions" aria-label="Scheduler actions">
+          <button class="primary">New Pull</button>
+        </nav>
+      </header>
+
+      <div class="content scheduler-layout">
+        <section class="panel">
+          <div class="toolbar">
+            <div>
+              <h2 class="section-title">Scheduled Pulls</h2>
+              <p class="meta">Review status, schedule, and recent run output.</p>
+            </div>
+            <div class="actions">
+              <button>All jobs</button>
+              <button>Needs attention</button>
+              <button class="icon" aria-label="Sort jobs">↓</button>
+            </div>
+          </div>
+          <div class="job-table">
+            <div class="job-row header"><span>Pull</span><span>Schedule</span><span>Last run</span><span>Action</span></div>
+            <div class="job-row">
+              <div><h3>Latest Contacts</h3><p class="meta">salesforce-json-pulls · smoke-prod</p></div>
+              <div><strong>Weekdays</strong><p class="meta">7:00 am, 12:00 pm, 5:30 pm</p></div>
+              <div><span class="badge green">success</span><p class="meta">2 minutes ago</p></div>
+              <button class="primary">Run now</button>
+            </div>
+            <div class="job-row">
+              <div><h3>Latest Accounts</h3><p class="meta">salesforce-json-pulls · smoke-prod</p></div>
+              <div><strong>Every 2 hrs</strong><p class="meta">Mon-Fri</p></div>
+              <div><span class="badge green">success</span><p class="meta">33 minutes ago</p></div>
+              <button>Run now</button>
+            </div>
+            <div class="job-row">
+              <div><h3>Renewal Opportunities</h3><p class="meta">eu-renewal-opportunities</p></div>
+              <div><strong>Manual</strong><p class="meta">no automatic schedule</p></div>
+              <div><span class="badge amber">needs login</span><p class="meta">Salesforce auth expired</p></div>
+              <button>Fix</button>
+            </div>
+          </div>
+        </section>
+
+        <aside class="panel wizard">
+          <div class="split-row">
+            <div>
+              <h2 class="section-title">Create Salesforce pull</h2>
+              <p class="meta">Step 2 of 5 · Report</p>
+            </div>
+            <button class="icon" aria-label="Close">×</button>
+          </div>
+          <div class="steps" aria-label="Wizard progress">
+            <div class="step done"></div>
+            <div class="step active"></div>
+            <div class="step"></div>
+            <div class="step"></div>
+            <div class="step"></div>
+          </div>
+          <form class="form">
+            <div class="field">
+              <label>Salesforce org</label>
+              <div class="input">smoke-prod · Connected</div>
+              <p class="helper">Use an active Salesforce login or choose New org.</p>
+            </div>
+            <div class="field">
+              <label>Report ID</label>
+              <div class="input">00O000000000AAA</div>
+              <p class="helper">Validated in smoke-prod.</p>
+            </div>
+            <div class="inline-fields">
+              <div class="field">
+                <label>Pull name</label>
+                <div class="input">EU Renewal Opportunities</div>
+              </div>
+              <div class="field">
+                <label>Folder slug</label>
+                <div class="input">eu-renewal-opportunities</div>
+              </div>
+            </div>
+            <div class="field">
+              <label>Schedule</label>
+              <div class="segmented"><span>Manual</span><span class="active">Multiple Times a Day</span><span>Every So Often</span></div>
+            </div>
+            <div class="field">
+              <label>Times</label>
+              <div class="schedule-chip-row">
+                <span class="schedule-chip">7:00 am</span>
+                <span class="schedule-chip">12:00 pm</span>
+                <span class="schedule-chip">5:30 pm</span>
+              </div>
+              <p class="helper">For more than five times a day, choose Every So Often.</p>
+            </div>
+            <div class="warning">
+              <strong>Before saving</strong>
+              <p class="helper">The generated job will use platform-safe paths and the selected active Salesforce org.</p>
+            </div>
+            <div class="actions" style="justify-content: flex-end;">
+              <button>Back</button>
+              <button class="primary">Save Pull</button>
+            </div>
+          </form>
+        </aside>
+      </div>
+    </section>
+  </main>
+</body>
+</html>
