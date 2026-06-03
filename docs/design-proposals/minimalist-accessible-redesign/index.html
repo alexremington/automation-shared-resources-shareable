@@ -66,6 +66,10 @@
       border-bottom: 1px solid var(--line);
     }
 
+    .duplicate-topbar {
+      min-height: 116px;
+    }
+
     .brand {
       display: flex;
       align-items: center;
@@ -128,6 +132,21 @@
       display: flex;
       align-items: center;
       justify-content: flex-end;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .header-action-stack {
+      justify-self: end;
+      display: grid;
+      gap: 8px;
+      justify-items: center;
+    }
+
+    .action-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
       gap: 10px;
       flex-wrap: wrap;
     }
@@ -198,15 +217,27 @@
 
     .duplicate-layout {
       display: grid;
-      grid-template-columns: 390px minmax(0, 1fr);
-      gap: 18px;
+      grid-template-columns: 320px minmax(0, 1fr);
+      gap: 32px;
+      align-items: start;
     }
 
     .left-stack,
     .right-stack,
     .scheduler-stack {
       display: grid;
-      gap: 18px;
+      gap: 22px;
+    }
+
+    .left-stack {
+      position: relative;
+      z-index: 1;
+    }
+
+    .right-stack {
+      min-width: 0;
+      position: relative;
+      z-index: 2;
     }
 
     .control-panel {
@@ -292,7 +323,7 @@
 
     .field-row {
       display: grid;
-      grid-template-columns: 1fr 140px 1fr auto;
+      grid-template-columns: minmax(0, 1fr);
       gap: 10px;
       align-items: center;
     }
@@ -335,8 +366,8 @@
     }
 
     .summary-tile {
-      min-height: 74px;
-      padding: 14px 16px;
+      min-height: 68px;
+      padding: 12px 14px;
       background: var(--surface);
     }
 
@@ -351,6 +382,24 @@
       border-left: 6px solid var(--teal);
       display: grid;
       gap: 14px;
+    }
+
+    .compact-list {
+      display: grid;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .list-row {
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      align-items: center;
+      gap: 12px;
+      min-height: 42px;
+      padding: 8px 10px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: var(--surface-soft);
     }
 
     .split-row {
@@ -386,6 +435,31 @@
 
     .review-panel {
       overflow: hidden;
+    }
+
+    .merge-overview {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 280px;
+      gap: 22px;
+      align-items: start;
+    }
+
+    .decision-panel {
+      padding: 20px;
+      display: grid;
+      gap: 18px;
+    }
+
+    .decision-panel .actions {
+      justify-content: stretch;
+    }
+
+    .decision-panel .actions button {
+      flex: 1 1 0;
+    }
+
+    .compare-section {
+      grid-column: 1 / -1;
     }
 
     .review-head {
@@ -484,9 +558,28 @@
       border-radius: 10px;
       background: var(--amber-soft);
       display: grid;
-      grid-template-columns: 1fr auto;
+      grid-template-columns: minmax(0, 1fr) auto;
       gap: 16px;
       align-items: center;
+    }
+
+    @media (max-width: 900px) {
+      .topbar,
+      .duplicate-layout,
+      .scheduler-layout,
+      .merge-overview {
+        grid-template-columns: 1fr;
+      }
+
+      .top-status,
+      .actions,
+      .header-action-stack {
+        justify-self: start;
+      }
+
+      .blocker {
+        grid-template-columns: 1fr;
+      }
     }
 
     .scheduler-layout {
@@ -603,7 +696,7 @@
 <body>
   <main class="gallery">
     <section class="app-shot" id="duplicate-reviewer-redesign" aria-label="Duplicate Reviewer proposed redesign">
-      <header class="topbar">
+      <header class="topbar duplicate-topbar">
         <div class="brand">
           <div class="mark">P</div>
           <div>
@@ -612,12 +705,16 @@
           </div>
         </div>
         <div class="top-status"><span class="status-dot"></span>Latest Contacts loaded · 2 records · 1 group</div>
-        <nav class="actions" aria-label="Duplicate Reviewer actions">
-          <button class="primary">Import</button>
-          <button>Export</button>
-          <button>Send to Codex</button>
-          <button>Demo Data</button>
-          <button class="icon" aria-label="Help">?</button>
+        <nav class="header-action-stack" aria-label="Duplicate Reviewer actions">
+          <div class="action-row">
+            <button class="primary">Import</button>
+            <button>Export</button>
+            <button class="icon" aria-label="Help">?</button>
+          </div>
+          <div class="action-row">
+            <button>Send to Codex</button>
+            <button>Demo Data</button>
+          </div>
         </nav>
       </header>
 
@@ -643,12 +740,6 @@
               </div>
             </div>
             <div class="check-row"><span class="box"></span><span>Fastest search</span><span class="meta">(may miss some results)</span></div>
-          </section>
-
-          <section class="summary-grid" aria-label="Dataset summary">
-            <div class="summary-tile"><span class="meta">Total Records</span><strong>2</strong></div>
-            <div class="summary-tile"><span class="meta">Match Groups</span><strong>1</strong></div>
-            <div class="summary-tile"><span class="meta">Reviewed</span><strong>0%</strong></div>
           </section>
 
           <section class="panel-flat control-panel">
@@ -677,33 +768,54 @@
         </aside>
 
         <section class="right-stack">
-          <section class="panel-flat group-card">
-            <div class="split-row">
+          <section class="summary-grid" aria-label="Dataset summary">
+            <div class="summary-tile"><span class="meta">Total Records</span><strong>2</strong></div>
+            <div class="summary-tile"><span class="meta">Match Groups</span><strong>1</strong></div>
+            <div class="summary-tile"><span class="meta">Reviewed</span><strong>0%</strong></div>
+          </section>
+
+          <section class="merge-overview">
+            <section class="panel-flat group-card">
+              <div class="split-row">
+                <div>
+                  <span class="badge green">Contacts</span>
+                  <h2 class="section-title" style="margin-top: 8px;">Contact group 1</h2>
+                  <p class="meta">Duplicate decision not set</p>
+                </div>
+                <span class="badge green">95 match</span>
+              </div>
+              <div class="badges">
+                <span class="badge">Exact phone</span>
+                <span class="badge">Same email domain</span>
+                <span class="badge">Near-exact full name</span>
+              </div>
+              <div class="compact-list">
+                <div class="list-row"><span class="box"></span><strong>Alexander Test</strong><span class="meta">missing ID</span></div>
+                <div class="list-row"><span class="box"></span><strong>Alex Test</strong><span class="meta">missing ID</span></div>
+              </div>
+            </section>
+
+            <aside class="panel-flat decision-panel">
               <div>
-                <span class="badge green">Contacts</span>
-                <h2 class="section-title" style="margin-top: 8px;">Contact group 1</h2>
-                <p class="meta">Duplicate decision not set</p>
+                <h2 class="section-title">Decision</h2>
+                <p class="meta">Mark the group before sending a merge to Salesforce.</p>
               </div>
               <div class="actions">
                 <button>Duplicate</button>
                 <button>Not Duplicate</button>
               </div>
-            </div>
-            <div class="segmented"><span>Evaluate</span><span class="active">Merge</span></div>
+              <div class="segmented"><span>Evaluate</span><span class="active">Merge</span></div>
+              <span class="badge amber">Needs setup</span>
+            </aside>
           </section>
 
-          <section class="panel review-panel">
+          <section class="panel review-panel compare-section">
             <div class="review-head">
               <div>
-                <h2>95 match score</h2>
-                <p class="meta">100% fields matched · min pair 95</p>
-                <div class="badges">
-                  <span class="badge">Exact phone</span>
-                  <span class="badge">Same email domain</span>
-                  <span class="badge">Near-exact full name</span>
-                </div>
+                <h2>Merge setup</h2>
+                <p class="meta">2 Contacts: choose one master and any duplicate Contacts before merging.</p>
               </div>
-              <span class="badge amber">Needs setup</span>
+              <span class="badge amber">Contact IDs required</span>
             </div>
             <div class="merge-band">
               <span class="meta">Contact merge</span>

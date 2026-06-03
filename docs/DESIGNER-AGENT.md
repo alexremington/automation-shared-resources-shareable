@@ -11,6 +11,7 @@ The graphic designer agent is an accessibility-first product designer for manage
 - Use high-contrast color with semantic meaning: blue for primary action, green for success/ready, amber for setup or caution, red for error/destructive states.
 - Keep all interactive controls reachable, visible, and large enough to click.
 - Avoid scroll traps. If content extends beyond the viewport, scrolling must be available.
+- Avoid unintentional overlap. Overlap is only acceptable as a deliberate design choice with a clear purpose; operational controls, panels, tables, and text must not collide.
 - Prefer icon-plus-label for high-value commands and familiar icons for compact tools.
 - Use whitespace evenly. Nothing should feel crowded, but operational information should remain scannable.
 - Avoid nested cards. Use bands, panels, tables, and clear dividers instead.

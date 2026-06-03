@@ -24,6 +24,7 @@ const REQUIRED_REVIEW_TERMS = [
   "accessibility",
   "current functionality",
   "scroll",
+  "overlap",
   "smoke"
 ];
 

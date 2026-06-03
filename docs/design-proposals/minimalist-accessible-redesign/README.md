@@ -12,12 +12,13 @@ This proposal applies the graphic designer agent persona from `docs/DESIGNER-AGE
   - Amber: setup needed, caution, recoverable blocker.
   - Red: destructive or unrecoverable error.
 - Keep controls compact but not crowded.
+- Keep layout zones physically separate. Side rails, center panes, tables, and action panels must never overlap unintentionally at any supported viewport. Deliberate overlap is allowed only when it serves a clear design purpose and does not reduce legibility or operability.
 - Keep comparison and job data scannable with stable rows and clear status labels.
 - Never hide required content below a non-scrollable viewport.
 
 ## Duplicate Reviewer Proposal
 
-- Move toward a two-column operational workspace: controls and group list on the left, review/merge workspace on the right.
+- Move toward a separated operational workspace: controls and group list in a compact left rail, selected-group overview and decisions in the main pane, and detailed merge comparison in a full-width band below the overview.
 - Make merge blockers visible before the final submit button.
 - For missing Contact IDs, show a single recovery action: `Load Latest Contacts`.
 - Reduce visual weight in Label Status and Recent Files.
