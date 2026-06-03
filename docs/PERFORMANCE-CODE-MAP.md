@@ -59,6 +59,13 @@ Performance-sensitive server paths:
 
 ## Codex Token Parsimony
 
+- Prefer one session per task. Start a new session for a new feature, bug, review, release pass, or architecture question unless continuity is required.
 - Start from this file, the feature brief, and the specific app files listed above.
 - Use `rg` for narrow symbol searches before opening large files.
 - Prefer targeted pipeline evidence during implementation, then full release evidence before shipping.
+- Classify broad work as `low`, `medium`, or `high` expected Codex cost before running it.
+- Prefer `gpt-5.4 mini` for `low` and `medium` cost work when the current surface supports model choice.
+- Warn before `medium` work such as a full smoke or release pass for one app, a large targeted log read, or broader repo searches after narrower searches failed.
+- Warn and get user approval before `high` work such as multi-app release/smoke runs, deep history review, bulk large-file exploration, or repo-wide scans outside the active app.
+- If the session cannot switch models, keep the same narrow `low` or `medium` cost scope rather than expanding the task.
+- When a new session is started, carry forward only the active app, feature or bug, relevant files, blocker, and any still-active high-cost approval.

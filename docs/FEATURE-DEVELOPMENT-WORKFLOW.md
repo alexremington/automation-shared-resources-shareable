@@ -6,6 +6,8 @@ This workflow applies to managed Automation Projects apps, including Salesforce 
 
 Start from the user's requested outcome, not the implementation detail.
 
+Start a new session for the task unless continuity is clearly required. Default to one session per feature, bug, review, release pass, or architecture question.
+
 Capture:
 
 - the user task or decision the feature supports;
@@ -17,6 +19,13 @@ Capture:
 - deployment target: private only, shareable only, or both.
 
 If a requirement touches Salesforce writes, merges, scheduled jobs, local files, OneDrive, Excel workbooks, or credentials, record the safety boundary before coding.
+
+If continuing from an older session, carry forward only:
+
+- affected app or repo;
+- active feature or bug;
+- relevant files, commands, and blockers;
+- any still-active approval for a high-cost step.
 
 ## 2. Create The Feature Record
 
@@ -71,6 +80,8 @@ The implementation should preserve existing functionality unless the feature bri
 
 Before code changes, identify the exact tests that will prove the feature works.
 
+Before broad exploration or verification, identify the cheapest sufficient evidence path. Classify the next step as `low`, `medium`, or `high` expected Codex cost. Prefer `gpt-5.4 mini` for `low` and `medium` cost work when the current surface supports model choice. If the next step is `medium`, warn first in a short status update and explain why the narrower option is insufficient. If the next step is `high`, warn first and get user approval before proceeding.
+
 Use the fastest sufficient tier:
 
 ```bash
@@ -91,6 +102,23 @@ The targeted tier only runs commands declared in `feature-test-manifest.json`; u
 Add or update fixtures under `tests/fixtures/` for critical workflows. Use dummy data when live data would be slow, unsafe, or unreliable.
 
 Every fixed user-visible bug should get a named regression assertion in either a check script or the Playwright smoke harness.
+
+`High` Codex cost operations include:
+
+- repo-wide scans outside the app or folder already in scope;
+- opening large logs, generated artifacts, or many large files mainly for exploration;
+- deep multi-commit history review;
+- full release or multi-app smoke passes when targeted checks would answer the question;
+- re-running an expensive failing step before narrowing the failure surface.
+
+`Medium` Codex cost operations include:
+
+- a full smoke or release pass for one app;
+- opening one large log or file for a specific debugging need;
+- broader searches across one repo after app-scoped searches were insufficient;
+- reading several related files to trace one workflow end to end.
+
+If model switching is unavailable in the current session, still follow the same cost classification and scope limits even when `gpt-5.4 mini` cannot be selected for `low` or `medium` cost work.
 
 ## 6. Implementation
 
