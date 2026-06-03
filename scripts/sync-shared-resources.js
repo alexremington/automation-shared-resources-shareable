@@ -13,6 +13,7 @@ const copies = [
   ["css/managed-app-base.css", path.join(PUBLIC_ROOT, "vendor/managed-app/css/managed-app-base.css")],
   ["assets/politico-logo.svg", path.join(PUBLIC_ROOT, "vendor/managed-app/assets/politico-logo.svg")],
   ["scripts/managed-worker-client.js", path.join(PUBLIC_ROOT, "vendor/managed-app/scripts/managed-worker-client.js")],
+  ["scripts/platform.js", path.join(APP_ROOT, "vendor/managed-app/scripts/platform.js")],
   ["scripts/playwright-loader.js", path.join(APP_ROOT, "vendor/managed-app/scripts/playwright-loader.js")],
   ["scripts/setup-shared-playwright.js", path.join(APP_ROOT, "vendor/managed-app/scripts/setup-shared-playwright.js")]
 ];

@@ -4,9 +4,13 @@
   "private": true,
   "description": "Shared UI, test, and workflow resources for managed Automation Projects apps.",
   "scripts": {
-    "check": "node scripts/check.js"
+    "check": "node scripts/check.js && node scripts/check-platform.js && tsc --noEmit"
   },
   "engines": {
     "node": ">=18"
+  },
+  "devDependencies": {
+    "@types/node": "^25.9.1",
+    "typescript": "^6.0.3"
   }
 }
