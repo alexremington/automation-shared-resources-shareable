@@ -4,7 +4,11 @@
   "private": true,
   "description": "Shared UI, test, and workflow resources for managed Automation Projects apps.",
   "scripts": {
-    "check": "node scripts/check.js && node scripts/check-platform.js && tsc --noEmit"
+    "check": "node scripts/check.js && node scripts/check-platform.js && tsc --noEmit",
+    "pipeline": "node scripts/managed-app-pipeline.js",
+    "verify:fast": "node scripts/managed-app-pipeline.js --tier fast",
+    "verify:smoke": "node scripts/managed-app-pipeline.js --tier smoke",
+    "verify:release": "node scripts/managed-app-pipeline.js --tier release"
   },
   "engines": {
     "node": ">=18"
