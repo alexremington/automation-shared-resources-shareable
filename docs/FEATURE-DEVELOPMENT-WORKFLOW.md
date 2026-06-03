@@ -79,6 +79,15 @@ npm run smoke:ui:local
 npm run verify:release
 ```
 
+For faster iteration on narrow changes, prefer the changed-file and targeted managed pipeline options while building:
+
+```bash
+node ../automation-shared-resources/scripts/managed-app-pipeline.js --tier fast --app . --changed
+node ../automation-shared-resources/scripts/managed-app-pipeline.js --tier targeted --app . --feature feature-id
+```
+
+The targeted tier only runs commands declared in `feature-test-manifest.json`; update the manifest before relying on it.
+
 Add or update fixtures under `tests/fixtures/` for critical workflows. Use dummy data when live data would be slow, unsafe, or unreliable.
 
 Every fixed user-visible bug should get a named regression assertion in either a check script or the Playwright smoke harness.
@@ -111,6 +120,14 @@ Run targeted Playwright smoke when UI behavior changes:
 
 ```bash
 npm run smoke:ui:local
+```
+
+For every changed interactive element, the smoke test should assert the visible post-action state, not just that the element can be clicked. This is especially important for cached or memoized UI: include at least one count-preserving state transition, such as editing an existing value, relabeling a selected row, toggling the same control twice, or refreshing data where the number of rendered items stays the same.
+
+If the feature manifest already declares the exact required test commands, use the targeted tier for lower-cost iteration:
+
+```bash
+node ../automation-shared-resources/scripts/managed-app-pipeline.js --tier targeted --app . --feature feature-id
 ```
 
 For shared infrastructure changes, run from `automation-shared-resources`:
@@ -165,6 +182,8 @@ The release tier verifies:
 - Windows portability checks;
 - local Playwright smoke tests;
 - shareable branch checks.
+
+Use the full release tier before shipping even when targeted checks passed during implementation.
 
 Keep the generated evidence:
 

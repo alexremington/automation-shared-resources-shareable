@@ -7,7 +7,9 @@ const requiredFiles = [
   "assets/politico-logo.svg",
   "docs/DESIGNER-AGENT.md",
   "docs/FEATURE-DEVELOPMENT-WORKFLOW.md",
+  "docs/PERFORMANCE-CODE-MAP.md",
   "scripts/check-feature-manifest.js",
+  "scripts/check-js-syntax.js",
   "scripts/managed-worker-client.js",
   "scripts/managed-app-pipeline.js",
   "scripts/feature-new.js",
@@ -26,10 +28,11 @@ for (const file of requiredFiles) {
   }
 }
 
-for (const file of requiredFiles.filter((file) => file.endsWith(".js"))) {
-  require("node:child_process").execFileSync(process.execPath, ["--check", path.join(root, file)], {
-    stdio: "inherit"
-  });
-}
+require("node:child_process").execFileSync(process.execPath, [
+  path.join(root, "scripts/check-js-syntax.js"),
+  root
+], {
+  stdio: "inherit"
+});
 
 console.log("Shared resources check passed.");

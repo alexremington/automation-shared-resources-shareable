@@ -11,11 +11,13 @@ const DEFAULT_CONCURRENCY = 2;
 const TIERS = {
   fast: ["sync:shared", "check"],
   smoke: ["sync:shared", "check", "smoke:ui:local"],
+  targeted: ["sync:shared", "check", "feature:tests"],
   release: ["sync:shared", "check", "check:features", "check:windows", "smoke:ui:local", "check:shareable"]
 };
 const SHARED_STEPS = {
   fast: ["check"],
   smoke: ["check"],
+  targeted: ["check"],
   release: ["check"]
 };
 
@@ -85,6 +87,7 @@ function parseArgs(args) {
     apps: [],
     concurrency: DEFAULT_CONCURRENCY,
     dryRun: false,
+    featureIds: [],
     includeShared: true,
     list: false,
     outputDir: "",
@@ -107,6 +110,12 @@ function parseArgs(args) {
       options.concurrency = positiveInteger(arg.slice("--concurrency=".length), arg);
     } else if (arg === "--dry-run") {
       options.dryRun = true;
+    } else if (arg === "--changed") {
+      options.changedOnly = true;
+    } else if (arg === "--feature") {
+      options.featureIds.push(requiredValue(args, index += 1, arg));
+    } else if (arg.startsWith("--feature=")) {
+      options.featureIds.push(arg.slice("--feature=".length));
     } else if (arg === "--list") {
       options.list = true;
     } else if (arg === "--no-shared") {
@@ -135,10 +144,13 @@ function printUsage() {
     "Usage: node scripts/managed-app-pipeline.js [options]",
     "",
     "Options:",
-    "  --tier fast|smoke|release   Select the verification tier. Default: smoke",
+    "  --tier fast|smoke|targeted|release",
+    "                              Select the verification tier. Default: smoke",
     "  --app NAME_OR_PATH           Run one app. Can be repeated.",
     "  --apps A,B                   Run a comma-separated app list.",
     "  --concurrency N              Number of app pipelines to run at once. Default: 2",
+    "  --changed                    Use check:changed when an app provides it.",
+    "  --feature ID                 Run tests declared for one feature. Can be repeated.",
     "  --output-dir PATH            Write evidence artifacts to PATH.",
     "  --no-shared                  Skip automation-shared-resources check.",
     "  --dry-run                    Print planned steps without executing them.",
@@ -202,14 +214,20 @@ async function runApps(apps, steps, runDir, options) {
 async function runPackageSteps(pkg, steps, runDir, options) {
   const results = [];
   for (const scriptName of steps) {
-    const result = await runPackageScript(pkg, scriptName, runDir, options);
-    results.push(result);
-    if (result.status === "failed") break;
+    const stepResults = scriptName === "feature:tests"
+      ? await runFeatureTests(pkg, runDir, options)
+      : [await runPackageScript(pkg, scriptName, runDir, options)];
+    results.push(...stepResults);
+    if (stepResults.some((result) => result.status === "failed")) break;
   }
   return results;
 }
 
 async function runPackageScript(pkg, scriptName, runDir, options) {
+  const requestedScriptName = scriptName;
+  if (options.changedOnly && scriptName === "check" && pkg.manifest.scripts?.["check:changed"]) {
+    scriptName = "check:changed";
+  }
   const startedAt = new Date();
   const logPath = path.join(runDir, `${safeFileName(pkg.name)}-${safeFileName(scriptName)}.log`);
   if (!pkg.manifest.scripts?.[scriptName]) {
@@ -220,7 +238,7 @@ async function runPackageScript(pkg, scriptName, runDir, options) {
   }
 
   if (options.dryRun) {
-    const result = stepResult(pkg, scriptName, "dry-run", startedAt, new Date(), logPath, 0);
+    const result = stepResult(pkg, requestedScriptName === scriptName ? scriptName : `${requestedScriptName}->${scriptName}`, "dry-run", startedAt, new Date(), logPath, 0);
     await writeStepLog(logPath, [`Dry run: npm run ${scriptName}`, `cwd: ${pkg.dir}`]);
     console.log(`[dry] ${pkg.name} npm run ${scriptName}`);
     return result;
@@ -230,7 +248,7 @@ async function runPackageScript(pkg, scriptName, runDir, options) {
   const runResult = await spawnNpmScript(pkg.dir, scriptName, logPath);
   const finishedAt = new Date();
   const status = runResult.code === 0 ? "passed" : "failed";
-  const result = stepResult(pkg, scriptName, status, startedAt, finishedAt, logPath, runResult.code, runResult.signal);
+  const result = stepResult(pkg, requestedScriptName === scriptName ? scriptName : `${requestedScriptName}->${scriptName}`, status, startedAt, finishedAt, logPath, runResult.code, runResult.signal);
   const duration = formatDuration(result.durationMs);
   if (status === "passed") {
     console.log(`[pass] ${pkg.name} ${scriptName} (${duration})`);
@@ -240,6 +258,69 @@ async function runPackageScript(pkg, scriptName, runDir, options) {
     if (runResult.tail) console.error(indent(runResult.tail, "       "));
   }
   return result;
+}
+
+async function runFeatureTests(pkg, runDir, options) {
+  const tests = featureTestsForPackage(pkg, options.featureIds);
+  if (!tests.length) {
+    const startedAt = new Date();
+    const logPath = path.join(runDir, `${safeFileName(pkg.name)}-feature-tests.log`);
+    const status = options.featureIds.length ? "failed" : "skipped";
+    const lines = options.featureIds.length
+      ? [`No feature tests found for: ${options.featureIds.join(", ")}`]
+      : ["Skipped: no --feature filter was supplied."];
+    await writeStepLog(logPath, lines);
+    console[status === "failed" ? "error" : "log"](`[${status === "failed" ? "fail" : "skip"}] ${pkg.name} feature:tests`);
+    return [stepResult(pkg, "feature:tests", status, startedAt, new Date(), logPath, status === "failed" ? 1 : 0)];
+  }
+
+  const results = [];
+  const seenCommands = new Set();
+  for (const test of tests) {
+    const command = String(test.command || "").trim();
+    if (!command || seenCommands.has(command)) continue;
+    seenCommands.add(command);
+    const label = `feature:${safeFileName(test.featureId)}:${safeFileName(test.name || "test")}`;
+    results.push(await runPackageCommand(pkg, label, command, runDir, options));
+    if (results[results.length - 1].status === "failed") break;
+  }
+  return results.length ? results : runFeatureTests({ ...pkg }, runDir, { ...options, featureIds: ["(no commands)"] });
+}
+
+async function runPackageCommand(pkg, label, command, runDir, options) {
+  const startedAt = new Date();
+  const logPath = path.join(runDir, `${safeFileName(pkg.name)}-${safeFileName(label)}.log`);
+  if (options.dryRun) {
+    const result = stepResult(pkg, label, "dry-run", startedAt, new Date(), logPath, 0);
+    await writeStepLog(logPath, [`Dry run: ${command}`, `cwd: ${pkg.dir}`]);
+    console.log(`[dry] ${pkg.name} ${command}`);
+    return result;
+  }
+
+  console.log(`[run] ${pkg.name} ${command}`);
+  const runResult = await spawnShellCommand(pkg.dir, command, logPath);
+  const finishedAt = new Date();
+  const status = runResult.code === 0 ? "passed" : "failed";
+  const result = stepResult(pkg, label, status, startedAt, finishedAt, logPath, runResult.code, runResult.signal);
+  if (status === "passed") {
+    console.log(`[pass] ${pkg.name} ${label} (${formatDuration(result.durationMs)})`);
+  } else {
+    console.error(`[fail] ${pkg.name} ${label} (${formatDuration(result.durationMs)})`);
+    console.error(`       log: ${logPath}`);
+    if (runResult.tail) console.error(indent(runResult.tail, "       "));
+  }
+  return result;
+}
+
+function featureTestsForPackage(pkg, requestedFeatureIds) {
+  if (!requestedFeatureIds.length) return [];
+  const manifestPath = path.join(pkg.dir, "feature-test-manifest.json");
+  if (!fs.existsSync(manifestPath)) return [];
+  const manifest = readJson(manifestPath);
+  const requested = new Set(requestedFeatureIds);
+  return (manifest.features || [])
+    .filter((feature) => requested.has(feature.id))
+    .flatMap((feature) => (feature.tests || []).map((test) => ({ ...test, featureId: feature.id })));
 }
 
 function spawnNpmScript(cwd, scriptName, logPath) {
@@ -255,6 +336,49 @@ function spawnNpmScript(cwd, scriptName, logPath) {
       cwd,
       env: { ...process.env, FORCE_COLOR: "0" },
       shell: false
+    });
+    const append = (chunk) => {
+      const text = String(chunk || "");
+      logStream.write(text);
+      for (const line of text.split(/\r?\n/).filter(Boolean)) {
+        tail.push(line);
+        if (tail.length > 20) tail.shift();
+      }
+    };
+    child.stdout.on("data", append);
+    child.stderr.on("data", append);
+    child.on("error", (error) => {
+      append(`\n${error.message}\n`);
+    });
+    child.on("close", (code, signal) => {
+      const finishedAt = new Date();
+      logStream.write(`\nfinishedAt: ${finishedAt.toISOString()}\n`);
+      logStream.write(`durationMs: ${finishedAt.getTime() - startedAt.getTime()}\n`);
+      logStream.write(`exitCode: ${code == null ? "" : code}\n`);
+      if (signal) logStream.write(`signal: ${signal}\n`);
+      logStream.end(() => {
+        resolve({
+          code: code == null ? 1 : code,
+          signal,
+          tail: tail.join("\n")
+        });
+      });
+    });
+  });
+}
+
+function spawnShellCommand(cwd, command, logPath) {
+  return new Promise((resolve) => {
+    const startedAt = new Date();
+    const logStream = fs.createWriteStream(logPath, { flags: "w" });
+    const tail = [];
+    logStream.write(`$ ${command}\n`);
+    logStream.write(`cwd: ${cwd}\n`);
+    logStream.write(`startedAt: ${startedAt.toISOString()}\n\n`);
+    const child = childProcess.spawn(command, {
+      cwd,
+      env: { ...process.env, FORCE_COLOR: "0" },
+      shell: true
     });
     const append = (chunk) => {
       const text = String(chunk || "");
@@ -346,6 +470,10 @@ function printSummary(summary) {
 
 function readPackageManifest(dir) {
   return JSON.parse(fs.readFileSync(path.join(dir, "package.json"), "utf8"));
+}
+
+function readJson(filePath) {
+  return JSON.parse(fs.readFileSync(filePath, "utf8"));
 }
 
 function timestampForPath(date) {

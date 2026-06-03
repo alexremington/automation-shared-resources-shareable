@@ -8,6 +8,7 @@ For the end-to-end feature workflow from requirements intake through deployment,
 
 - `fast`: sync shared resources and run `npm run check`.
 - `smoke`: run `fast`, then `npm run smoke:ui:local`.
+- `targeted`: sync shared resources, run checks, then run the test commands declared for the requested feature in `feature-test-manifest.json`.
 - `release`: run `smoke`, plus `npm run check:windows` and `npm run check:shareable`.
 
 Each tier starts with the shared-resource `check`, which includes Hume's design gate. That gate verifies the shared designer brief, the current design proposal artifact, each app's `docs/HUME-DESIGN-REVIEW.md`, visible focus styling, the no-body-scroll-lock rule, and explicit overlap review.
@@ -51,6 +52,20 @@ List discovered managed apps:
 ```bash
 node ../automation-shared-resources/scripts/managed-app-pipeline.js --list
 ```
+
+For lower-cost local iteration, run changed-file checks when the app supports `check:changed`:
+
+```bash
+node ../automation-shared-resources/scripts/managed-app-pipeline.js --tier fast --app . --changed
+```
+
+For a feature-specific pass, list the feature's required test commands in `feature-test-manifest.json`, then run:
+
+```bash
+node ../automation-shared-resources/scripts/managed-app-pipeline.js --tier targeted --app . --feature feature-id
+```
+
+Use targeted runs while building. Use the full release tier before shipping or pushing shared app changes.
 
 ## Evidence
 
@@ -96,3 +111,5 @@ A future managed app should provide:
 The app should keep workflow-specific fixtures under `tests/fixtures/` and import shared smoke-test mechanics from `vendor/managed-app/scripts/smoke-test-harness.js`.
 
 Each app should also include `docs/HUME-DESIGN-REVIEW.md`. Visible feature work should update that review before implementation and use the managed release pipeline to confirm the built feature still aligns with Hume's minimalist, high-contrast, accessibility-first direction.
+
+Use `docs/PERFORMANCE-CODE-MAP.md` before broad changes so browser, server, Salesforce API, and Codex context costs stay focused.
