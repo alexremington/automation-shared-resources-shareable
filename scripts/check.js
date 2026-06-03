@@ -6,6 +6,7 @@ const requiredFiles = [
   "css/managed-app-base.css",
   "assets/politico-logo.svg",
   "docs/DESIGNER-AGENT.md",
+  "docs/FEATURE-DEVELOPMENT-WORKFLOW.md",
   "scripts/check-feature-manifest.js",
   "scripts/managed-worker-client.js",
   "scripts/managed-app-pipeline.js",

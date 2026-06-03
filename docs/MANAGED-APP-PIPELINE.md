@@ -2,6 +2,8 @@
 
 The managed app pipeline is the shared verification harness for Automation Projects apps. It discovers sibling managed apps, syncs shared resources, runs the selected verification tier, and writes evidence artifacts for each run.
 
+For the end-to-end feature workflow from requirements intake through deployment, use `docs/FEATURE-DEVELOPMENT-WORKFLOW.md`.
+
 ## Tiers
 
 - `fast`: sync shared resources and run `npm run check`.
