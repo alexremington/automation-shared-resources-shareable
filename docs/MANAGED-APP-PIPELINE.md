@@ -30,6 +30,14 @@ npm run verify:smoke
 npm run verify:release
 ```
 
+Start a tracked feature from an individual managed app:
+
+```bash
+npm run feature:new -- missing-contact-id-refresh --title "Missing Contact ID refresh"
+```
+
+This creates `docs/features/<slug>.md` and updates `feature-test-manifest.json`. Keep the manifest status as `in-progress` while building. Before release, either mark it `complete` with requirements, acceptance criteria, Hume design review, cross-platform status, and test evidence, or mark it `deferred`/`archived` if it is intentionally not shipping.
+
 From an individual managed app, run the default smoke tier across all managed apps:
 
 ```bash
@@ -58,14 +66,28 @@ The evidence folder contains:
 
 Use `summary.md` as the release checklist evidence before pushing private and shareable branches.
 
+## Feature Manifest Gate
+
+Every managed app should keep a root-level `feature-test-manifest.json`. Normal app checks validate that the manifest and linked feature briefs are well-formed. The release tier additionally runs `npm run check:features`, which blocks release when:
+
+- a feature is still `planned`, `in-progress`, or `ready-for-release`;
+- a completed feature is missing requirements or acceptance criteria;
+- a visible UI feature has not recorded Hume design review notes;
+- tests are not marked `passed` or `not-applicable` with evidence;
+- Mac or Windows status is not marked `passed` or `not-applicable`.
+
+This makes product requirements, implementation, and smoke-test evidence part of the same release artifact.
+
 ## Future App Requirements
 
 A future managed app should provide:
 
 - `sync:shared`
 - `check`
+- `check:features`
 - `check:windows`
 - `check:shareable`
+- `feature:new`
 - `smoke:ui`
 - `smoke:ui:local`
 

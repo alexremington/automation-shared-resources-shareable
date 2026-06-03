@@ -11,7 +11,7 @@ const DEFAULT_CONCURRENCY = 2;
 const TIERS = {
   fast: ["sync:shared", "check"],
   smoke: ["sync:shared", "check", "smoke:ui:local"],
-  release: ["sync:shared", "check", "check:windows", "smoke:ui:local", "check:shareable"]
+  release: ["sync:shared", "check", "check:features", "check:windows", "smoke:ui:local", "check:shareable"]
 };
 const SHARED_STEPS = {
   fast: ["check"],

@@ -5,7 +5,9 @@
   "description": "Shared UI, test, and workflow resources for managed Automation Projects apps.",
   "scripts": {
     "check": "node scripts/check.js && node scripts/check-platform.js && node scripts/check-hume-design.js && tsc --noEmit",
+    "check:features": "node scripts/check-feature-manifest.js --all",
     "check:hume": "node scripts/check-hume-design.js",
+    "feature:new": "node scripts/feature-new.js",
     "pipeline": "node scripts/managed-app-pipeline.js",
     "verify:fast": "node scripts/managed-app-pipeline.js --tier fast",
     "verify:smoke": "node scripts/managed-app-pipeline.js --tier smoke",
