@@ -15,6 +15,7 @@ const copies = [
   ["scripts/managed-worker-client.js", path.join(PUBLIC_ROOT, "vendor/managed-app/scripts/managed-worker-client.js")],
   ["scripts/platform.js", path.join(APP_ROOT, "vendor/managed-app/scripts/platform.js")],
   ["scripts/playwright-loader.js", path.join(APP_ROOT, "vendor/managed-app/scripts/playwright-loader.js")],
+  ["scripts/smoke-test-harness.js", path.join(APP_ROOT, "vendor/managed-app/scripts/smoke-test-harness.js")],
   ["scripts/setup-shared-playwright.js", path.join(APP_ROOT, "vendor/managed-app/scripts/setup-shared-playwright.js")]
 ];
 

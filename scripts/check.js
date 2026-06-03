@@ -8,6 +8,7 @@ const requiredFiles = [
   "scripts/managed-worker-client.js",
   "scripts/platform.js",
   "scripts/playwright-loader.js",
+  "scripts/smoke-test-harness.js",
   "scripts/setup-shared-playwright.js",
   "scripts/sync-shared-resources.js"
 ];

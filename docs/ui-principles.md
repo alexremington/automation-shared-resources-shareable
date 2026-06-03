@@ -7,3 +7,5 @@
 - Ensure root or panel scrolling remains available whenever content exceeds the viewport.
 - Use responsive constraints and stable dimensions for controls, grids, sidebars, cards, and toolbars.
 - Move CPU-heavy browser work such as large-file parsing, duplicate matching, scoring, or export preparation into a Web Worker when the app runs from a local server. Keep simple network requests and DOM rendering on the main thread.
+- Cover visible interactive controls with the shared Playwright smoke-test harness. A visible button, input, menu item, link, or role button must be reachable and clickable through the UI unless the test explicitly marks it as intentionally hidden.
+- Add lightweight performance budgets for large local datasets and worker-backed workflows so regressions fail in smoke tests before users feel them.
